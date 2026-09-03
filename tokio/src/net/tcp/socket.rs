@@ -840,11 +840,11 @@ impl TcpSocket {
     /// ```
     pub async fn connect(self, addr: SocketAddr) -> io::Result<TcpStream> {
         if let Err(err) = self.inner.connect(&addr.into()) {
-            #[cfg(not(windows))]
+            #[cfg(all(not(windows), not(target_os = "scarlet")))]
             if err.raw_os_error() != Some(libc::EINPROGRESS) {
                 return Err(err);
             }
-            #[cfg(windows)]
+            #[cfg(any(windows, target_os = "scarlet"))]
             if err.kind() != io::ErrorKind::WouldBlock {
                 return Err(err);
             }
@@ -994,7 +994,7 @@ impl fmt::Debug for TcpSocket {
 
 // These trait implementations can't be build on Windows, so we completely
 // ignore them, even when building documentation.
-#[cfg(any(unix, target_os = "wasi"))]
+#[cfg(any(unix, target_os = "scarlet", target_os = "wasi"))]
 cfg_unix_or_wasi! {
     impl AsRawFd for TcpSocket {
         fn as_raw_fd(&self) -> RawFd {

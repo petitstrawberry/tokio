@@ -58,13 +58,14 @@ macro_rules! cfg_unix {
     }
 }
 
-/// Enables Unix-specific code, including WASI.
-/// Use this macro instead of `cfg(any(unix, target_os = "wasi"))` to generate docs properly.
+/// Enables file-descriptor-based code on Unix, Scarlet, and WASI.
+/// Use this macro instead of
+/// `cfg(any(unix, target_os = "scarlet", target_os = "wasi"))` to generate docs properly.
 macro_rules! cfg_unix_or_wasi {
     ($($item:item)*) => {
         $(
-            #[cfg(any(all(doc, docsrs), unix, target_os = "wasi"))]
-            #[cfg_attr(docsrs, doc(cfg(any(unix, target_os = "wasi"))))]
+            #[cfg(any(all(doc, docsrs), unix, target_os = "scarlet", target_os = "wasi"))]
+            #[cfg_attr(docsrs, doc(cfg(any(unix, target_os = "scarlet", target_os = "wasi"))))]
             $item
         )*
     }
